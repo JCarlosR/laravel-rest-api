@@ -7,9 +7,6 @@ use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
-    // Withdraw from non-existing account
-    // POST /event {"type":"withdraw", "origin":"200", "amount":10}
-    // 404 0
 
     public function store(Request $request)
     {
@@ -49,5 +46,15 @@ class EventController extends Controller
     {
         $account = Account::findOrFail($origin);
         
+        // Withdraw from existing account
+        $account->balance -= $amount;
+        $account->save();
+
+        return response()->json([
+            'origin' => [
+                'id' => $account->id,
+                'balance' => $account->balance
+            ]
+        ], 201);
     }
 }
